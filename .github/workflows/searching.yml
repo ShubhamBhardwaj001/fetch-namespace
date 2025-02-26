@@ -1,0 +1,48 @@
+name: Search for mule-jms-connector
+
+on:
+  workflow_dispatch:
+
+jobs:
+  search:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install GitHub CLI
+      run: sudo apt-get install gh
+
+    - name: Authenticate GitHub CLI
+      run: echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token
+
+    - name: Search for mule-jms-connector in repositories
+      run: |
+        echo "Fetching repositories..."
+        repos=$(gh repo list --limit 100 --json name --jq '.[] | select(.name | startswith("mule-")) | .name')
+        
+        echo "Repositories fetched:"
+        echo "$repos"
+        
+        repos_using_namespace=()
+
+        for repo in $repos; do
+          if [[ $repo == mule-* ]]; then
+            echo "Searching in $repo"
+            file_name_result=$(gh search code "filename:mule-jms-connector repo:allegis-is/$repo" --json textMatches --jq 'length')
+            folder_name_result=$(gh search code "path:mule-jms-connector repo:allegis-is/$repo" --json textMatches --jq 'length')
+            file_content_result=$(gh search code "mule-jms-connector in:file repo:allegis-is/$repo" --json textMatches --jq 'length')
+            
+            echo "Results for $repo - File Name: $file_name_result, Folder Name: $folder_name_result, File Content: $file_content_result"
+            
+            if [ "$file_name_result" -gt 0 ] || [ "$folder_name_result" -gt 0 ] || [ "$file_content_result" -gt 0 ]; then
+              repos_using_namespace+=($repo)
+            fi
+          fi
+        done
+
+        echo "Repositories containing files or folders named or with the string 'mule-jms-connector':"
+        for repo in "${repos_using_namespace[@]}"; do
+          echo $repo
+        done
