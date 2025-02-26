@@ -29,9 +29,9 @@ jobs:
 
         for repo in $repos; do
           echo "Searching in $repo"
-          file_name_result=$(gh code search --query "filename:mule-jms-connector repo:$repo" --json totalCount --jq '.totalCount')
-          folder_name_result=$(gh code search --query "path:mule-jms-connector repo:$repo" --json totalCount --jq '.totalCount')
-          file_content_result=$(gh code search --query "mule-jms-connector in:file repo:$repo" --json totalCount --jq '.totalCount')
+          file_name_result=$(gh search code --query "filename:mule-jms-connector repo:$repo" --json totalCount --jq '.totalCount')
+          folder_name_result=$(gh search code --query "path:mule-jms-connector repo:$repo" --json totalCount --jq '.totalCount')
+          file_content_result=$(gh search code --query "mule-jms-connector in:file repo:$repo" --json totalCount --jq '.totalCount')
           
           echo "Results for $repo - File Name: $file_name_result, Folder Name: $folder_name_result, File Content: $file_content_result"
           
