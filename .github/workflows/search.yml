@@ -28,15 +28,12 @@ jobs:
         repos_using_namespace=()
 
         for repo in $repos; do
-          echo "Searching in $repo"
-          file_name_result=$(gh search code "mule-jms-connector filename:mule-jms-connector repo:$repo" --json textMatches --jq 'length')
-          folder_name_result=$(gh search code "mule-jms-connector path:mule-jms-connector repo:$repo" --json textMatches --jq 'length')
-          file_content_result=$(gh search code "mule-jms-connector in:file repo:$repo" --json textMatches --jq 'length')
-          
-          echo "Results for $repo - File Name: $file_name_result, Folder Name: $folder_name_result, File Content: $file_content_result"
-          
-          if [ "$file_name_result" -gt 0 ] || [ "$folder_name_result" -gt 0 ] || [ "$file_content_result" -gt 0 ]; then
-            repos_using_namespace+=($repo)
+          if [[ $repo == mule-* ]]; then
+            echo "Searching in $repo"
+            result=$(gh api -X GET "search/code?q=mule-jms-connector+in:file+repo:allegis-is/$repo" --jq '.total_count')
+            if [ "$result" -gt 0 ]; then
+              repos_using_namespace+=($repo)
+            fi
           fi
         done
 
