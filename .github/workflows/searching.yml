@@ -1,4 +1,4 @@
-name: Searching for mule-jms-connector
+name: Search for mule-jms-connector
 
 on:
   workflow_dispatch:
@@ -30,13 +30,9 @@ jobs:
         for repo in $repos; do
           if [[ $repo == mule-* ]]; then
             echo "Searching in $repo"
-            file_name_result=$(gh search code "filename:mule-jms-connector repo:allegis-is/$repo" --json textMatches --jq 'length')
-            folder_name_result=$(gh search code "path:mule-jms-connector repo:allegis-is/$repo" --json textMatches --jq 'length')
-            file_content_result=$(gh search code "mule-jms-connector in:file repo:allegis-is/$repo" --json textMatches --jq 'length')
-            
-            echo "Results for $repo - File Name: $file_name_result, Folder Name: $folder_name_result, File Content: $file_content_result"
-            
-            if [ "$file_name_result" -gt 0 ] || [ "$folder_name_result" -gt 0 ] || [ "$file_content_result" -gt 0 ]; then
+            result=$(gh api -X GET "search/code?q=mule-jms-connector+in:file+repo:allegis-is/$repo" --jq '.total_count')
+            echo "Search result for $repo: $result"
+            if [ "$result" -gt 0 ]; then
               repos_using_namespace+=($repo)
             fi
           fi
