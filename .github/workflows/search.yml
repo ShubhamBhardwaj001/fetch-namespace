@@ -31,6 +31,7 @@ jobs:
           if [[ $repo == mule-* ]]; then
             echo "Searching in $repo"
             result=$(gh api -X GET "search/code?q=mule-jms-connector+in:file+repo:allegis-is/$repo" --jq '.total_count')
+            echo "Search result for $repo: $result"
             if [ "$result" -gt 0 ]; then
               repos_using_namespace+=($repo)
             fi
