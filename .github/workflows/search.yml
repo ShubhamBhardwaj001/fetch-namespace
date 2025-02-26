@@ -29,17 +29,13 @@ jobs:
 
         for repo in $repos; do
           echo "Searching in $repo"
-          file_name_result=$(gh search code "filename:mule-jms-connector repo:$repo" --json textMatches)
-          folder_name_result=$(gh search code "path:mule-jms-connector repo:$repo" --json textMatches)
-          file_content_result=$(gh search code "mule-jms-connector in:file repo:$repo" --json textMatches)
+          file_name_result=$(gh search code "filename:mule-jms-connector repo:$repo" --json textMatches --jq 'length')
+          folder_name_result=$(gh search code "path:mule-jms-connector repo:$repo" --json textMatches --jq 'length')
+          file_content_result=$(gh search code "mule-jms-connector in:file repo:$repo" --json textMatches --jq 'length')
           
-          file_name_count=$(echo $file_name_result | jq 'length')
-          folder_name_count=$(echo $folder_name_result | jq 'length')
-          file_content_count=$(echo $file_content_result | jq 'length')
+          echo "Results for $repo - File Name: $file_name_result, Folder Name: $folder_name_result, File Content: $file_content_result"
           
-          echo "Results for $repo - File Name: $file_name_count, Folder Name: $folder_name_count, File Content: $file_content_count"
-          
-          if [ "$file_name_count" -gt 0 ] || [ "$folder_name_count" -gt 0 ] || [ "$file_content_count" -gt 0 ]; then
+          if [ "$file_name_result" -gt 0 ] || [ "$folder_name_result" -gt 0 ] || [ "$file_content_result" -gt 0 ]; then
             repos_using_namespace+=($repo)
           fi
         done
