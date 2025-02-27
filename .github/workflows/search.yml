@@ -1,4 +1,4 @@
-name: Search for mule-jms-connector
+name: Searching for mule-jms-connector
 
 on:
   workflow_dispatch:
